@@ -21,11 +21,11 @@ interface State {
 
 export const useStore = create<State>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       chats: [],
       currentChatId: null,
       settings: {
-        apiKey: 'AIzaSyAzSsABq1Fp_3IAPiadwBlC7F8LDsUs0ac',
+        apiKey:'AIzaSyAzSsABq1Fp_3IAPiadwBlC7F8LDsUs0ac',
         temperature: 0.7,
         maxTokens: 1000,
         theme: 'light',
@@ -39,7 +39,7 @@ export const useStore = create<State>()(
         set((state) => {
           const newChat: Chat = {
             id: crypto.randomUUID(),
-            title: 'New Chat',
+            title: `New Chat`,
             messages: [],
             createdAt: Date.now(),
             updatedAt: Date.now(),
@@ -63,9 +63,7 @@ export const useStore = create<State>()(
             chat.id === chatId
               ? {
                   ...chat,
-                  title: chat.messages.length === 0
-                    ? content?.slice(0, 30).trim() || 'Untitled Chat'
-                    : chat.title,
+                  title: chat.messages.length === 0 ? content.slice(0, 30) + '...' : chat.title,
                   messages: [
                     ...chat.messages,
                     {
@@ -93,15 +91,13 @@ export const useStore = create<State>()(
         })),
       clearAllChats: () => set({ chats: [], currentChatId: null }),
       exportChat: (chatId) => {
-        const chat = get().chats.find((c) => c.id === chatId);
+        const state = useStore.getState();
+        const chat = state.chats.find((c) => c.id === chatId);
         return chat ? JSON.stringify(chat) : '';
       },
-      importChat: (chatData) => {
+      importChat: (chatData: string) => {
         try {
           const chat = JSON.parse(chatData) as Chat;
-          if (!chat.id || !chat.messages || !chat.title) {
-            throw new Error('Invalid chat structure');
-          }
           set((state) => ({
             chats: [{ ...chat, id: crypto.randomUUID() }, ...state.chats],
           }));
@@ -109,7 +105,10 @@ export const useStore = create<State>()(
           console.error('Failed to import chat:', error);
         }
       },
-      exportSettings: () => JSON.stringify(get().settings),
+      exportSettings: () => {
+        const state = useStore.getState();
+        return JSON.stringify(state.settings);
+      },
       importSettings: (settingsData) => {
         try {
           const newSettings = JSON.parse(settingsData) as Settings;
@@ -122,7 +121,7 @@ export const useStore = create<State>()(
       },
     }),
     {
-      name: 'gemini-chat-storage', // Local storage key
+      name: 'gemini-chat-storage',
     }
   )
 );
