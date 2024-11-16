@@ -2,10 +2,11 @@
 
 Lumino AI Chatbot is an advanced chat management interface that leverages the **Google Gemini API** for intelligent and context-aware chat responses. Built with React and TypeScript, it features an interactive and user-friendly sidebar for creating, managing, and exporting chats.
 
+Live demo on vercel https://luminoai.vercel.app/
 
-![Screenshot (514)](https://github.com/user-attachments/assets/e7f6bf6a-ab88-40ef-b5c6-35d43f2d0a58)
-
-
+![Screenshot (514)](https://github.com/user-attachments/assets/48683b39-2f46-4f8e-bfd3-48707b72e6b3)
+![Screenshot (517)](https://github.com/user-attachments/assets/4c983dd7-914d-47a3-a7cb-aa314382f3bd)
+![Screenshot (516)](https://github.com/user-attachments/assets/2bb82b85-7327-4a8c-bbe6-324cfef819c0)
 
 ## Features
 
