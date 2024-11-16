@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Copy, Check, Loader } from 'lucide-react';
+import { Send, Copy, Check, Loader } from 'lucide-react'; // Add Loader for the loading spinner
 import { useStore } from '../store';
 import { Message } from '../types';
 import ReactMarkdown from 'react-markdown';
-import { User, Bot } from 'lucide-react'; // Add your preferred icon library
+import { User, Bot } from 'lucide-react';
 
 export const ChatArea: React.FC = () => {
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { chats, currentChatId, settings, addMessage } = useStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -23,9 +23,13 @@ export const ChatArea: React.FC = () => {
   }, [currentChat?.messages]);
 
   const handleCopy = async (text: string, messageId: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedId(messageId);
-    setTimeout(() => setCopiedId(null), 2000);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(messageId);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (error) {
+      console.error('Failed to copy text:', error);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,12 +76,12 @@ export const ChatArea: React.FC = () => {
       );
 
       if (!response.ok) {
-        throw new Error('API request failed');
+        throw new Error(`API request failed with status ${response.status}`);
       }
 
       const data = await response.json();
 
-      if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
         const aiResponse = data.candidates[0].content.parts[0].text;
         addMessage(currentChatId, 'assistant', aiResponse);
       } else {
@@ -105,7 +109,7 @@ export const ChatArea: React.FC = () => {
             Select or create a new chat to start exploring Lumino AI's capabilities. Let's get started!
           </p>
           <p> Made By Suresh Priyankara </p>
-          <p> Copyright @ 2024. All Right Received </p>
+          <p> Copyright © 2024. All Rights Reserved. </p>
         </div>
       </div>
     );
@@ -169,14 +173,14 @@ export const ChatArea: React.FC = () => {
             className="flex-1 px-4 py-3 rounded-lg border focus:outline-none focus:border-blue-500"
             disabled={isLoading}
           />
-           <button
+          <button
             type="submit"
             className={`px-6 py-3 bg-blue-600 text-white rounded-lg transition-colors ${
               isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
             }`}
             disabled={isLoading}
           >
-            {isLoading ? <Loader className="animate-spin" size={20} /> : <Send size={20} />}
+            {isLoading ? <Loader size={20} className="animate-spin" /> : <Send size={20} />}
           </button>
         </div>
       </form>
